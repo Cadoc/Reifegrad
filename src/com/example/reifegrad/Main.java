@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class Main extends Activity {
-	// Test
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -20,6 +20,7 @@ public class Main extends Activity {
 		// Buttons referenzieren
 		Button buttonTakeImage = (Button) findViewById(R.id.button1);
 		Button buttonLoadImage = (Button) findViewById(R.id.button2);
+		
 
 		// ClickListener erstellen
 		buttonLoadImage.setOnClickListener(new Button.OnClickListener() {
@@ -42,7 +43,10 @@ public class Main extends Activity {
 			// URI des Bildes
 			Uri targetUri = data.getData();
 			// Aufruf Vergleichscode
+			Intent decisionIntent = new Intent(getApplicationContext(), Decision.class);
+			decisionIntent.setData(data.getData());
 
+			startActivity(decisionIntent);
 		}
 	}
 

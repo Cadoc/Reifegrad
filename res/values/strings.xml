@@ -6,5 +6,12 @@
     <string name="menu_settings">Settings</string>
     <string name="Camerabutton">Take picture with camera!</string>
     <string name="Picturebutton">Choose picture from gallery!</string>
+    
+    <string name="Decision_head">Your picture:</string>
+    <string name="Decision_head_2">Decision by shape:</string>
+    <string name="Decision_head_3">Decision by colour:</string>
+    <string name="Decision_text_1">No banana like shape</string>
+    <string name="Decision_text_2">No banana like colours.</string>
+    
 
 </resources>

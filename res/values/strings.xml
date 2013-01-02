@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">Reifegrad</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="Welcometext">With our app you can determine weather or not you are photographing a banana and how ripe it is.</string>
     <string name="menu_settings">Settings</string>
+    <string name="Camerabutton">Take picture with camera!</string>
+    <string name="Picturebutton">Choose picture from gallery!</string>
 
 </resources>

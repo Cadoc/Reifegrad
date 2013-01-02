@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 
-public class Menu extends Activity {
+public class Main extends Activity {
     // Test
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

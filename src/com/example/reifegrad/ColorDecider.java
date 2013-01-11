@@ -4,12 +4,20 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+/*
+ * Mostly inspired by ViewFinderEE368.java
+ * http://www.stanford.edu/class/ee368/Android/ViewfinderEE368/ViewfinderEE368.java
+ */
+
 public class ColorDecider extends AsyncTask<Void,Void,Void> {
 	
 	Bitmap bmp;
 	int[] mRedHistogram;
 	int[] mGreenHistogram;
 	int[] mBlueHistogram;
+	double imageRedMean = 0;
+	double imageGreenMean = 0;
+	double imageBlueMean = 0;
 	byte[][] mask;
 	Decision dec;
 	
@@ -58,15 +66,42 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 	
 	@Override
 	protected Void doInBackground(Void... params) {
-		Log.d("Run", "ColorHist running");
+		Log.d("ColorDecider", "ColorHist running");
 		calculateIntensityHistogram();
-		Log.d("Run", "ColorHist finished");
+		Log.d("ColorDecider", "ColorHist finished");
+		calclulateMean();
+		Log.d("ColorDecider", "Mean Computation finished");
+		decide();
+		Log.d("ColorDecider", "Decided!");
 		return null;
 	}
 	
+	private void decide() {
+		// TODO Auto-generated method stub
+		//   hier dann die Entscheidung ... entscheidungsbaum?
+	}
+
+	private void calclulateMean() {
+		// Calculate mean
+    	double redHistogramSum = 0, greenHistogramSum = 0, blueHistogramSum = 0;
+    	for (int bin = 0; bin < 256; bin++)
+    	{
+    		imageRedMean += mRedHistogram[bin] * bin;
+    		redHistogramSum += mRedHistogram[bin];
+    		imageGreenMean += mGreenHistogram[bin] * bin;
+    		greenHistogramSum += mGreenHistogram[bin];
+    		imageBlueMean += mBlueHistogram[bin] * bin;
+    		blueHistogramSum += mBlueHistogram[bin];
+    	} // bin
+    	imageRedMean /= redHistogramSum;
+    	imageGreenMean /= greenHistogramSum;
+    	imageBlueMean /= blueHistogramSum;
+	}
+
 	protected void onPostExecute(Void result) {
-        // showDialog("Downloaded " + result + " bytes");
-		for(int i= 0; i < 256; i++)
-			Log.w("ColorHist", "r" + mRedHistogram[i] + " g" + mGreenHistogram[i] + " b" + mBlueHistogram[i]);
+		Log.d("ColorDecider", "r" + imageRedMean + " g" + imageGreenMean + " b" + imageBlueMean);
+		// for(int i= 0; i < 256; i++)
+		//	Log.w("ColorHist", "r" + mRedHistogram[i] + " g" + mGreenHistogram[i] + " b" + mBlueHistogram[i]);
+		// TODO: display result using dec
     }
 }

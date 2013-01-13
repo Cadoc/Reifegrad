@@ -50,6 +50,7 @@ int string Decision_text_1 0x7f060008
 int string Decision_text_2 0x7f060009
 int string Picturebutton 0x7f060004
 int string Welcometext 0x7f060001
+int string album_name 0x7f06000a
 int string app_name 0x7f060000
 int string menu_settings 0x7f060002
 int style AppBaseTheme 0x7f070000

@@ -263,6 +263,7 @@ containing a value of this type.
         public static final int Decision_text_2=0x7f060009;
         public static final int Picturebutton=0x7f060004;
         public static final int Welcometext=0x7f060001;
+        public static final int album_name=0x7f06000a;
         public static final int app_name=0x7f060000;
         public static final int menu_settings=0x7f060002;
     }

@@ -68,7 +68,7 @@ public class Decision extends Activity {
 		shapeDecision();
 
 		//Show black and white image for testing purposes
-		displayBWImg();
+		//displayBWImg();
 
 		//Start color decision
 		dec = new ColorDecider(this, originalImageBitmap, blackwhiteValueArray);
@@ -125,8 +125,8 @@ public class Decision extends Activity {
 		average = average / result.size();
 
 		Log.d("average", ""+average);
-		//Decision: If average is between 100 and 200 it is most likely a banana like shaped object (Source of Value: Testimage average = 116,66..)
-		if (average >= 110 && average <= 120) shapeTextView.setText("Object has a Banana like shape");
+		//Decision: If average is between 100 and 200 it is most likely a banana like shaped object (Source of Value: Testimage average = 116.66.., 144.44..., 158.58.., ...)
+		if (average >= 100 && average <= 200) shapeTextView.setText("Object has a Banana like shape");
 	}
 
 	/**

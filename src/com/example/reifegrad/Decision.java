@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,13 +44,17 @@ public class Decision extends Activity {
 		
 		//Get data from previews Intent (= Main Menu)
 		Uri imageURI = getIntent().getData();
-
+		Log.d("URI", imageURI.toString());
+		
 		//Initialize Variables
 		originalImageBitmap = null;
 		bwbitmap = null;
 
 		//Open Picture and load it into variables
-		File imageFile = new File(getRealPathFromURI(imageURI));
+		File imageFile;
+		//For some awkward reason uri.fromfile can return a path instead of an uri. Therefor this hack had to be done.
+		if(imageURI.toString().startsWith("file://")) imageFile = new File(imageURI.toString().substring(7));
+		else imageFile = new File(getRealPathFromURI(imageURI));
 		originalImageBitmap = decodeFile(imageFile);
 		bwbitmap = originalImageBitmap.copy(originalImageBitmap.getConfig(),
 				true);
@@ -95,10 +100,17 @@ public class Decision extends Activity {
 		zeilensummen();
 
 		//Put rowSumArray in HashMap to have the occurrences of values counted
-		int[] possibleNumbers = new int[rowSumArray.length];
+		int[] possibleNumbers;
+		if(width<height) {
+			possibleNumbers = new int[height];
+		} else {
+			possibleNumbers = new int[width];
+		}
+		
 		Map<Integer, Integer> result = new HashMap<Integer, Integer>();
 
 		for (int i = 0; i < rowSumArray.length; ++i) {
+			
 			possibleNumbers[rowSumArray[i]] = possibleNumbers[rowSumArray[i]] + 1;
 			result.put(rowSumArray[i], possibleNumbers[rowSumArray[i]]);
 		}
@@ -111,9 +123,9 @@ public class Decision extends Activity {
 		}
 		average = average / result.size();
 
+		Log.d("average", ""+average);
 		//Decision: If average is between 100 and 200 it is most likely a banana like shaped object (Source of Value: Testimage average = 116,66..)
-		if (average >= 100 && average <= 200)
-			shapeTextView.setText("Object has a Banana like shape");
+		if (average >= 100 && average <= 200) shapeTextView.setText("Object has a Banana like shape");
 	}
 
 	/**
@@ -208,11 +220,13 @@ public class Decision extends Activity {
 	 * @return
 	 */
 	private String getRealPathFromURI(Uri contentURI) {
-		Cursor cursor = getContentResolver().query(contentURI, null, null,
-				null, null);
-		cursor.moveToFirst();
-		int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-		return cursor.getString(idx);
+		Log.d("URI",contentURI.toString());
+	    Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+	    cursor.moveToFirst(); 
+	    int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+	    Log.d("getRealPathFromURI",cursor.getString(idx));
+	    Log.d("toPath",contentURI.getPath());
+	    return cursor.getString(idx); 
 	}
 
 }

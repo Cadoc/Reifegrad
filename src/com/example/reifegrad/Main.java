@@ -106,10 +106,10 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Layout.xml Auswählen
+		//Choose Layout.xml
 		setContentView(R.layout.activity_menu);
 
-		// Buttons referenzieren
+		//Reference Buttons
 		Button buttonTakeImage = (Button) findViewById(R.id.button1);
 		Button buttonLoadImage = (Button) findViewById(R.id.button2);
 		
@@ -127,7 +127,6 @@ public class Main extends Activity {
 				try {
 					f = setUpPhotoFile();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				mCurrentPhotoPath = f.getAbsolutePath();
@@ -167,7 +166,7 @@ public class Main extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+		if (resultCode == RESULT_OK) {
 		//Reference intent we want to start
 		Intent decisionIntent = new Intent(getApplicationContext(), Decision.class);
 		
@@ -190,6 +189,7 @@ public class Main extends Activity {
 				}
 		}
 		startActivity(decisionIntent);
+		}
 	}
 	
 	/**

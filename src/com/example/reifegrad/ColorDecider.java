@@ -35,6 +35,10 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
         this.dec= decision;
 	}
 	
+	/**
+	 * Computes the histogram
+	 * Values are stored in mRedHistogram, mGreenHistogram, mBlueHistogram
+	 */
 	public void calculateIntensityHistogram() {
 		int width = bmp.getWidth();
 		int height = bmp.getHeight();
@@ -66,6 +70,10 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 		}
     }
 	
+	/**
+	 * Compute the color histogram and decide about the Reifegrad
+	 * @see android.os.AsyncTask#doInBackground(Params[])
+	 */
 	@Override
 	protected Void doInBackground(Void... params) {
 		Log.d("ColorDecider", "ColorHist running");
@@ -78,6 +86,10 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 		return null;
 	}
 	
+	/**
+	 * Decide about the Reifegrad
+	 * Decision is stored in Result
+	 */
 	private void decide() {
 		//   hier dann die Entscheidung mittels entscheidungsbaum ...
 		if( imageRedMean < 50 && imageGreenMean > 150 && imageBlueMean > 150 )
@@ -93,12 +105,12 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 		else if( imageGreenMean > imageRedMean && imageGreenMean > imageBlueMean  )
 		{
 			// color = green, green
-			result= "Grn";
+			result= "Gr\u00FCn";
 		}
 		else if( imageBlueMean > imageRedMean && imageBlueMean > imageGreenMean  )
 		{
 			// color = yellow + a lot of brown, ueberreif
-			result= "berreif";
+			result= "\u00FCberreif";
 		}
 		else
 		{
@@ -107,6 +119,10 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 		}
 	}
 
+	/**
+	 * Calculate the mean of RGB in the color histogram
+	 * Results are stored in imageRedMean, imageGreenMean, imageBlueMean
+	 */
 	private void calclulateMean() {
 		// Calculate mean
     	for (int bin = 0; bin < 256; bin++)
@@ -123,7 +139,11 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
     	imageBlueMean /= blueHistogramSum;
 	}
 
-	protected void onPostExecute(Void result) {
+	/**
+	 * Display the result
+	 * This is the only method from which a modification of Decision.class is allowed
+	 */
+	protected void onPostExecute(Void res) {
 		Log.d("ColorDecider", "r" + imageRedMean + " g" + imageGreenMean + " b" + imageBlueMean);
 		Log.d("ColorDecider", "1r" + redHistogramSum + " g" + greenHistogramSum + " b" + blueHistogramSum);
 		// for(int i= 0; i < 256; i++)

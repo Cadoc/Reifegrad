@@ -1,6 +1,9 @@
 package com.example.reifegrad;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,7 +11,9 @@ import java.io.OutputStream;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,11 +48,55 @@ public class Decision extends Activity{
 		
 		Uri imageURI = getIntent().getData();
 		
-		selectedImageView.setImageURI(imageURI);
+		//selectedImageView.setImageURI(imageURI);
 		
 		originalImageBitmap = null;
 		bwbitmap= null;
 		
+		File imageFile = new File(getRealPathFromURI(imageURI));
+		
+		originalImageBitmap = decodeFile(imageFile);
+		
+		selectedImageView.setImageBitmap(originalImageBitmap);
+		
+		Log.e("Original   dimensions", originalImageBitmap.getWidth()+" "+originalImageBitmap.getHeight());
+		/*
+		//Bitmap original = BitmapFactory.decodeStream(getAssets().open("1024x768.jpg"));
+		Bitmap original = null;
+		try {
+			original = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageURI));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		original.compress(Bitmap.CompressFormat.PNG, 30, out);
+		Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
+		
+		Log.e("Original   dimensions", original.getWidth()+" "+original.getHeight());
+		Log.e("Compressed dimensions", decoded.getWidth()+" "+decoded.getHeight());
+		
+		original.recycle();
+		
+		originalImageBitmap = decoded;
+		
+		//decoded.recycle();
+		*/
+		bwbitmap= originalImageBitmap.copy(originalImageBitmap.getConfig(), true);
+		
+		width = originalImageBitmap.getWidth();
+		height = originalImageBitmap.getHeight();
+		
+		greyscale();
+		displayBWImg();
+		
+		dec = new ColorDecider(this, originalImageBitmap, blackwhiteValueArray);
+		
+		dec.execute();
+		
+		zeilensummen();
+		
+		/*
 		try {
 			originalImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageURI);
 			// bwbitmap= Bitmap.createBitmap(originalImageBitmap);
@@ -70,13 +119,14 @@ public class Decision extends Activity{
 		dec= new ColorDecider(this, originalImageBitmap, blackwhiteValueArray);
 		// dec.calculateIntensityHistogram();
 		dec.execute();
+		*/
 	}
 	
 	private void greyscale() {
 		blackwhiteValueArray= new byte [width][height];
 		
-		for (int i=40; i<width-40; i++) {
-			for(int j=40; j<height-40; j++) {
+		for (int i=0; i<width; i++) {
+			for(int j=0; j<height; j++) {
 				int v = originalImageBitmap.getPixel(i,j);
 				int r = (v & 0xFF);
 				int g = (v >> 8 & 0xFF);
@@ -99,7 +149,7 @@ public class Decision extends Activity{
 	}
 	
 	private void displayBWImg() {
-		try
+		/*try
 		{
 			String path = Environment.getExternalStorageDirectory().toString();
 			OutputStream fOut = null;
@@ -121,7 +171,8 @@ public class Decision extends Activity{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		selectedImageView.setImageBitmap(bwbitmap);
 	}
 	
 	private void zeilensummen() {
@@ -133,6 +184,38 @@ public class Decision extends Activity{
 	    		Zeilensumme += (int) blackwhiteValueArray[i][j];
 			Log.w("Array Zeile " + i +": ", ""+Zeilensumme);			
 	    }
+	}
+	
+	//decodes image and scales it to reduce memory consumption
+	private Bitmap decodeFile(File f){
+	    try {
+	        //Decode image size
+	        BitmapFactory.Options o = new BitmapFactory.Options();
+	        o.inJustDecodeBounds = true;
+	        BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+
+	        //The new size we want to scale to
+	        final int REQUIRED_SIZE=70;
+
+	        //Find the correct scale value. It should be the power of 2.
+	        int scale=1;
+	        while(o.outWidth/scale/2>=REQUIRED_SIZE && o.outHeight/scale/2>=REQUIRED_SIZE)
+	            scale*=2;
+
+	        //Decode with inSampleSize
+	        BitmapFactory.Options o2 = new BitmapFactory.Options();
+	        o2.inSampleSize=scale;
+	        return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+	    } catch (FileNotFoundException e) {}
+	    return null;
+	}
+	
+	private String getRealPathFromURI(Uri contentURI) {
+	    Cursor cursor = getContentResolver()
+	               .query(contentURI, null, null, null, null); 
+	    cursor.moveToFirst(); 
+	    int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA); 
+	    return cursor.getString(idx); 
 	}
 	
 }

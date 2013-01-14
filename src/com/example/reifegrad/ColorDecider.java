@@ -20,6 +20,8 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 	double imageBlueMean = 0;
 	byte[][] mask;
 	Decision dec;
+	double redHistogramSum = 0, greenHistogramSum = 0, blueHistogramSum = 0;
+	private String result;
 	
 	public ColorDecider(Decision decision, Bitmap bmp, byte [][] mask) {
 		
@@ -45,8 +47,8 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
     		
     	} // bin
     	
-    	for (int i=40; i<width-40; i++) {
-			for(int j=40; j<height-40; j++) {
+    	for (int i=0; i<width; i++) {
+			for(int j=0; j<height; j++) {
 	    		if( mask[i][j] == 1 )
 	    		{
 	    			int v = bmp.getPixel(i,j);
@@ -77,13 +79,36 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 	}
 	
 	private void decide() {
-		// TODO Auto-generated method stub
-		//   hier dann die Entscheidung ... entscheidungsbaum?
+		//   hier dann die Entscheidung mittels entscheidungsbaum ...
+		if( imageRedMean < 50 && imageGreenMean > 150 && imageBlueMean > 150 )
+		{
+			// color = yellow, normal
+			result= "Normal";
+		}
+		else if( imageRedMean > 50 && imageGreenMean > 150 && imageBlueMean > 150 )
+		{
+			// color = yellow + brown, reif
+			result= "Reif";
+		}
+		else if( imageGreenMean > imageRedMean && imageGreenMean > imageBlueMean  )
+		{
+			// color = green, green
+			result= "Grn";
+		}
+		else if( imageBlueMean > imageRedMean && imageBlueMean > imageGreenMean  )
+		{
+			// color = yellow + a lot of brown, ueberreif
+			result= "berreif";
+		}
+		else
+		{
+			// no banana?
+			result= "Keine Banane";
+		}
 	}
 
 	private void calclulateMean() {
 		// Calculate mean
-    	double redHistogramSum = 0, greenHistogramSum = 0, blueHistogramSum = 0;
     	for (int bin = 0; bin < 256; bin++)
     	{
     		imageRedMean += mRedHistogram[bin] * bin;
@@ -100,8 +125,10 @@ public class ColorDecider extends AsyncTask<Void,Void,Void> {
 
 	protected void onPostExecute(Void result) {
 		Log.d("ColorDecider", "r" + imageRedMean + " g" + imageGreenMean + " b" + imageBlueMean);
+		Log.d("ColorDecider", "1r" + redHistogramSum + " g" + greenHistogramSum + " b" + blueHistogramSum);
 		// for(int i= 0; i < 256; i++)
 		//	Log.w("ColorHist", "r" + mRedHistogram[i] + " g" + mGreenHistogram[i] + " b" + mBlueHistogram[i]);
 		// TODO: display result using dec
+		dec.setColorText(this.result);
     }
 }

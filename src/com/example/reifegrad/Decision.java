@@ -148,7 +148,7 @@ public class Decision extends Activity {
 
 				int grey = (int) (0.299 * r + 0.587 * g + 0.114 * b);
 
-				if (grey > 128) {
+				if (grey > 200) {
 					blackwhiteValueArray[i][j] = 0;
 					bwbitmap.setPixel(i, j, Color.WHITE);
 				} else {
@@ -225,6 +225,10 @@ public class Decision extends Activity {
 	    cursor.moveToFirst(); 
 	    int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
 	    return cursor.getString(idx); 
+	}
+
+	public void setColorText(String string) {
+		colorTextView.setText(string);
 	}
 
 }

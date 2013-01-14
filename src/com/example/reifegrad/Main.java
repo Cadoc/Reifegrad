@@ -1,15 +1,11 @@
 package com.example.reifegrad;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +19,7 @@ import android.widget.Button;
 
 public class Main extends Activity {
 	
+	//Variable definition
 	private static final String JPEG_FILE_PREFIX = "IMG_";
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
 	final static int ACTIVITY_SELECT_PHOTO = 1;
@@ -33,12 +30,18 @@ public class Main extends Activity {
 
 	
 	
-	/* Photo album for this application */
+	/**
+	 * Get the hard coded album name from the strings.xml
+	 * Source: https://developer.android.com/training/camera/photobasics.html
+	 */
 	private String getAlbumName() {
 		return getString(R.string.album_name);
 	}
 
-	
+	/**
+	 * Get the local storage path to the album "Reifegrad"
+	 * Source: https://developer.android.com/training/camera/photobasics.html
+	 */
 	private File getAlbumDir() {
 		File storageDir = null;
 
@@ -62,6 +65,10 @@ public class Main extends Activity {
 		return storageDir;
 	}
 
+	/**
+	 * Create the image file object with name and album.
+	 * Source: https://developer.android.com/training/camera/photobasics.html
+	 */
 	private File createImageFile() throws IOException {
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -71,6 +78,10 @@ public class Main extends Activity {
 		return imageF;
 	}
 
+	/**
+	 * Set up the preliminary file object
+	 * Source: https://developer.android.com/training/camera/photobasics.html
+	 */
 	private File setUpPhotoFile() throws IOException {
 		
 		File f = createImageFile();
@@ -79,6 +90,10 @@ public class Main extends Activity {
 		return f;
 	}
 
+	/**
+	 * Add the newly taken photo to the gallery
+	 * Source: https://developer.android.com/training/camera/photobasics.html
+	 */
 	private void galleryAddPic() {
 		    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
 			File f = new File(mCurrentPhotoPath);
@@ -99,7 +114,10 @@ public class Main extends Activity {
 		Button buttonLoadImage = (Button) findViewById(R.id.button2);
 		
 
-		// ClickListener erstellen
+		/**
+		 * Launch camera application and let the user take a photo.
+		 * The new photo is saved on the phone in the album "Reifegrad" in the "Pictures/" directory.
+		 */
 		buttonTakeImage.setOnClickListener(new Button.OnClickListener() {
 			
 			@Override
@@ -119,6 +137,10 @@ public class Main extends Activity {
 			}
 		});
 		
+		/**
+		 * Launch android picture gallery and let the user choose a photo.
+		 * Source: https://developer.android.com/training/camera/photobasics.html
+		 */
 		buttonLoadImage.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
@@ -136,18 +158,25 @@ public class Main extends Activity {
 			mAlbumStorageDirFactory = new BaseAlbumDirFactory();
 		}
 	}
-
+	/**
+	 * Called when an intent is started via an activity to gather results.
+	 * We start two intents in this way. Taking a photo with a camera application or choosing a photo from the gallery.
+	 * Depending on what intent was started different methods are used to set the URI of the image the user choose for the decision intent.
+	 * Source partly from https://developer.android.com/training/camera/photobasics.html and partly from basic android documentation on how to switch user interfaces.
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
+		//Reference intent we want to start
 		Intent decisionIntent = new Intent(getApplicationContext(), Decision.class);
 		
+		//Check wheater the user choose an image or took a photo
 		switch(requestCode) {
 			case ACTIVITY_CAMERA_PHOTO:
 				if (resultCode == RESULT_OK) {
-					// Aufruf Vergleichscode
-					Log.d("Case", "Fotoaufnahme");
+					//Get URI from photo and set it as data for the new intent
+					galleryAddPic();
 					File f = new File(mCurrentPhotoPath);
 				    Uri contentUri = Uri.fromFile(f);
 				    decisionIntent.setData(contentUri);
@@ -155,21 +184,22 @@ public class Main extends Activity {
 				}
 			case ACTIVITY_SELECT_PHOTO:
 				if (resultCode == RESULT_OK) {
-					// Aufruf Vergleichscode
-					Log.d("Case", "Fotoauswahl");
+					//Set URI as data for new intent
 					decisionIntent.setData(data.getData());
 					break;
 				}
 		}
 		startActivity(decisionIntent);
 	}
-
+	
+	/**
+	 * Options Menu stub. This is automatically generated when creating a new Android project.
+	 * We use no options menu in our application.
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_menu, menu);
 		return true;
 	}
-	
-
 }

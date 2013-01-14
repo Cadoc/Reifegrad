@@ -3,7 +3,10 @@ package com.example.reifegrad;
 import java.io.File;
 
 import android.os.Environment;
-
+/**
+ * Source https://developer.android.com/training/camera/photobasics.html
+ *
+ */
 public final class BaseAlbumDirFactory extends AlbumStorageDirFactory {
 
 	// Standard storage location for digital camera files
